@@ -7,9 +7,20 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
   
 });
+const currentDate = new Date().toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata",
+  dateStyle: "full",
+  timeStyle: "long",
+});
 const messages: Anthropic.MessageParam[] = [{
     role: "user",
-    content: `You are an AI assistant that has access to these tools:
+    content: `You are an AI assistant that has access to these tools.
+
+      Current date and time:
+      ${currentDate}
+
+      Timezone:
+      Asia/Kolkata
 
 ${Object.entries(tools)
   .map(([name, tool]) => `${name}: ${tool.description}`)
@@ -41,6 +52,7 @@ ${Object.entries(tools)
         - Do not add markdown.
         - Do not explain your decision.
         - If no tool is required, answer normally.
+        - Use the current date and timezone when interpreting words like today, tomorrow, next week, or next Friday.
       
       `,
   },
