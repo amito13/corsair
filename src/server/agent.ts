@@ -26,36 +26,30 @@ ${Object.entries(tools)
   .map(([name, tool]) => `${name}: ${tool.description}`)
   .join("\n")}
 
-      When you need to use a tool, respond ONLY in this JSON format:
+      When you need to use tools, respond ONLY in this JSON format:
 
-      For tools without inputs:
         {
-          "tool": "toolName"
+          "actions": [
+            {
+              "tool": "toolName",
+              "args": {
+                "parameterName": "value"
+              }
+            }
+          ]
         }
 
-        For tools that require inputs:
-        {
-          "tool": "toolName",
-          "args": {
-            "parameterName": "value"
-          }
-        }
-
-      If no tool is needed, answer normally.
-      Do not explain which tool you would use.
-      Do not add markdown.
-      Only return valid JSON when requesting a tool.
-      Rules:
-        - Use the exact tool name.
-        - Use the exact parameter names mentioned in the tool description.
-        - Generate ISO datetime strings when a date and time are required.
-        - Do not add markdown.
+        Rules:
+        - You can return one or multiple actions.
+        - Execute all actions needed to complete the user's request.
+        - Use exact tool names.
+        - Use exact parameter names from tool descriptions.
+        - Generate ISO datetime strings when dates are needed.
+        - Do not use markdown.
         - Do not explain your decision.
-        - If no tool is required, answer normally.
-        - Use the current date and timezone when interpreting words like today, tomorrow, next week, or next Friday.
-      
-      `,
-  },
+        - If no tool is needed, answer normally.
+              `,
+          },
 ];
 
 const rl = readline.createInterface({
@@ -66,20 +60,17 @@ const rl = readline.createInterface({
 async function askClaude() {
   return await anthropic.messages.create({
     model: "claude-opus-4-8",
-    max_tokens: 100,
+    max_tokens: 500,
     messages,
   });
 }
-function extractToolCall(response: any) {
+function extractToolCalls(response: any) {
   try {
     const text = response.content[0].text;
-    const parsed = JSON.parse(text);
+    const json = JSON.parse(text);
 
-    if (parsed.tool && tools[parsed.tool as keyof typeof tools]) {
-      return {
-        tool: parsed.tool as keyof typeof tools,
-        args: parsed.args || {},
-      };
+    if (json.actions && Array.isArray(json.actions)) {
+      return json.actions;
     }
 
     return null;
@@ -123,27 +114,28 @@ async function chat() {
 
    const response = await askClaude();
 
-const toolCall = extractToolCall(response);
+const actions = extractToolCalls(response);
+//console.log("Raw Claude output:", response);
+if (actions) {
+        for (const action of actions) {
+          const { tool, args } = action;
 
-if (toolCall) {
-  const { tool, args } = toolCall;
+          console.log(`🔧 Executing tool: ${tool}`);
+          console.log("📦 Arguments:", args);
 
-  console.log(`🔧 Executing tool: ${tool}`);
-  console.log("📦 Arguments:", args);
+          const result = await tools[tool as keyof typeof tools]
+            .execute(args);
 
-  const result = await tools[tool].execute(args);
-
-  messages.push({
-    role: "user",
-    content: `Tool execution result:
-  ${JSON.stringify({
-      toolUsed: tool,
-      arguments: args,
-      result,
-    })}
-
-Use this information to answer the user's original question naturally.`,
-  });
+          messages.push({
+            role: "user",
+            content: `Tool execution result:
+      ${JSON.stringify({
+        toolUsed: tool,
+        arguments: args,
+        result,
+      })}`,
+    });
+  }
 
   const finalResponse = await askClaude();
 
