@@ -1,4 +1,5 @@
 import { tools } from "../tools";
+import { logger } from "../utils/logger";
 import type {
   ToolAction, ActionResult,
 } from "../types/agent";
@@ -11,8 +12,8 @@ export async function executeActions(
   for (const action of actions) {
     const { tool, args } = action;
    
-    console.log(`🔧 Executing tool: ${tool}`);
-    console.log("📦 Arguments:", args);
+    logger.info(`Executing tool: ${tool}`);
+    logger.info("Arguments", args);
 
     try {
       const result = await tools[

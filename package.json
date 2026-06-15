@@ -5,6 +5,7 @@
   "private": true,
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
@@ -14,18 +15,23 @@
     "typescript": "^5"
   },
   "scripts": {
-    "test-script": "tsx src/server/test.ts"
+    "dev": "bun --watch src/api/server.ts",
+    "start": "bun src/api/server.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",
     "@corsair-dev/cli": "^0.1.19",
     "@corsair-dev/gmail": "^0.1.4",
     "@corsair-dev/googlecalendar": "^0.1.3",
+    "@tailwindcss/vite": "^4.3.1",
+    "axios": "^1.18.0",
+    "cors": "^2.8.6",
     "corsair": "^0.1.76",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
     "pg": "^8.21.0",
+    "tailwindcss": "^4.3.1",
     "zod": "^4.4.3"
   }
 }
