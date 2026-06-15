@@ -1,7 +1,7 @@
-import { getCalendarEvents } from "./calendar";
-import { createCalendarEvent } from "./createCalendarEvent";
-import {getEmails} from "./getEmails";
-import { sendEmail } from "./sendEmail";
+import { getCalendarEvents } from "../../tools/calendar/getEvents";
+import { createCalendarEvent } from "../../tools/calendar/createEvent";
+import {getEmails} from "../../tools/gmail/getEmails";
+import { sendEmail } from "../../tools/gmail/sendEmail";
 
 export const tools = {
   getCalendarEvents: {

@@ -1,4 +1,4 @@
-import { corsair } from './corsair.ts'
+import { corsair } from '../integrations/corsair.ts'
 import "dotenv/config" 
 
 const main = async () => {

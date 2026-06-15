@@ -1,4 +1,4 @@
-import { corsair } from "../corsair";
+import { corsair } from "../../integrations/corsair";
 
 export async function createCalendarEvent({
   summary,
