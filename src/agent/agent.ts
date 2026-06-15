@@ -5,10 +5,11 @@ import { tools } from "../server/tools";
 import { getSystemPrompt } from "./prompts";
 import  {extractToolCalls}  from "./parser";
 import { executeActions } from "./executor";
+import { env } from "../config/env";
+
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-  
+  apiKey: env.ANTHROPIC_API_KEY,
 });
 const currentDate = new Date().toLocaleString("en-IN", {
   timeZone: "Asia/Kolkata",
