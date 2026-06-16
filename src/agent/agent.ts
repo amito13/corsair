@@ -19,7 +19,7 @@ const messages: Anthropic.Messages.MessageParam[] = [
 async function askClaude(): Promise<Anthropic.Messages.Message> {
   return anthropic.messages.create({
     model: "claude-opus-4-8",
-    max_tokens: 100,
+    max_tokens: 500,
     messages,
   });
 }

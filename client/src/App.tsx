@@ -1,88 +1,102 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
+import Layout from "./components/Layout";
+import Sidebar from "./components/Sidebar";
+import ChatWindow from "./components/ChatWindow";
 import Message from "./components/Message";
 import ChatInput from "./components/ChatInput";
+import TypingIndicator from "./components/TypingIndicator";
+
 import { sendMessage } from "./services/api";
 import type { ChatMessage } from "./types/chat";
+
+
+function formatResponse(response: any): string {
+  if (Array.isArray(response)) {
+    return response
+      .filter((block) => block.type === "text")
+      .map((block) => block.text)
+      .join("\n");
+  }
+
+  return "No response received.";
+}
+
 
 function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
       content:
-        "👋 Hello! I am your AI assistant. I can manage your Gmail and Calendar.",
+        "Welcome, I am Corsair. Your ancient guardian of schedules and messages. 🐼",
     },
   ]);
 
   const [loading, setLoading] = useState(false);
-function formatResponse(response: any): string {
-  if (Array.isArray(response)) {
-    return response
-      .filter(
-        (block) => block.type === "text"
-      )
-      .map(
-        (block) => block.text
-      )
-      .join("\n");
-  }
 
-  return "No response received.";
-}
-async function handleSend(message: string) {
-  const userMessage: ChatMessage = {
-    role: "user",
-    content: message,
-  };
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  setMessages((prev) => [...prev, userMessage]);
 
-  setLoading(true);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages, loading]);
 
-  try {
-    const data = await sendMessage(message);
 
-    const assistantMessage: ChatMessage = {
-      role: "assistant",
-      content: formatResponse(data.response),
-    };
-
-    setMessages((prev) => [
-      ...prev,
-      assistantMessage,
-    ]);
-
-  } catch (error) {
+  async function handleSend(message: string) {
     setMessages((prev) => [
       ...prev,
       {
-        role: "assistant",
-        content:
-          "❌ Sorry, something went wrong. Please try again.",
+        role: "user",
+        content: message,
       },
     ]);
 
-    console.error(error);
+    setLoading(true);
 
-  } finally {
-    setLoading(false);
+
+    try {
+      const data = await sendMessage(message);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: formatResponse(data.response),
+        },
+      ]);
+
+    } catch (error) {
+      console.error(error);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "The scrolls are unclear today. Please try again later.",
+        },
+      ]);
+
+    } finally {
+      setLoading(false);
+    }
   }
-}
+
 
   return (
-    <div className="h-screen bg-zinc-950 text-white flex flex-col">
-      
-      {/* Header */}
-      <header className="h-16 border-b border-zinc-800 flex items-center px-6">
-        <h1 className="text-xl font-semibold">
-          Corsair AI Assistant
-        </h1>
-      </header>
+    <Layout>
+
+      {/* Sidebar */}
+      <Sidebar />
 
 
-      {/* Messages */}
-      <main className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
+      {/* Chat section */}
+      <div className="relative flex-1 h-screen">
+
+        <ChatWindow>
+
           {messages.map((message, index) => (
             <Message
               key={index}
@@ -90,19 +104,37 @@ async function handleSend(message: string) {
               content={message.content}
             />
           ))}
+
+
+          {loading && <TypingIndicator />}
+
+
+          <div ref={bottomRef} />
+
+        </ChatWindow>
+
+
+        {/* Floating bottom input */}
+        <div
+          className="
+            absolute
+            bottom-8
+            left-1/2
+            -translate-x-1/2
+            w-[70%]
+            z-30
+          "
+        >
+          <ChatInput
+            onSend={handleSend}
+            loading={loading}
+          />
         </div>
-      </main>
 
 
-      {/* Input */}
-      <footer className="p-5 border-t border-zinc-800">
-        <ChatInput
-          onSend={handleSend}
-          loading={loading}
-        />
-      </footer>
+      </div>
 
-    </div>
+    </Layout>
   );
 }
 

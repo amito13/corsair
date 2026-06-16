@@ -5,7 +5,10 @@ type ChatInputProps = {
   loading: boolean;
 };
 
-function ChatInput({ onSend, loading }: ChatInputProps) {
+function ChatInput({
+  onSend,
+  loading,
+}: ChatInputProps) {
   const [message, setMessage] = useState("");
 
   function handleSend() {
@@ -16,52 +19,95 @@ function ChatInput({ onSend, loading }: ChatInputProps) {
   }
 
   function handleKeyDown(
-    event: React.KeyboardEvent<HTMLInputElement>
+    e: React.KeyboardEvent<HTMLInputElement>
   ) {
-    if (event.key === "Enter") {
+    if (e.key === "Enter") {
       handleSend();
     }
   }
 
   return (
-    <div className="max-w-4xl mx-auto flex gap-3">
+    <div className="w-full px-10 pb-8 relative z-20">
 
-      <input
-        type="text"
-        value={message}
-        placeholder="Ask your assistant..."
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={handleKeyDown}
-        disabled={loading}
+      <div
         className="
-          flex-1
-          bg-zinc-900
-          border
-          border-zinc-800
-          rounded-xl
-          px-4
-          py-3
-          outline-none
-          focus:border-blue-500
-          disabled:opacity-50
-        "
-      />
-
-      <button
-        onClick={handleSend}
-        disabled={loading}
-        className="
-          bg-blue-600
-          hover:bg-blue-700
-          disabled:bg-zinc-700
-          px-6
-          rounded-xl
-          font-medium
-          cursor-pointer
+          max-w-5xl
+          mx-auto
+          bg-[#F7E8CE]
+          border-[3px]
+          border-[#8B5A2B]
+          rounded-3xl
+          shadow-[0_10px_30px_rgba(0,0,0,0.25)]
+          p-4
         "
       >
-        {loading ? "Sending..." : "Send"}
-      </button>
+        <div className="flex items-center gap-4">
+
+          {/* Brush Icon */}
+          <div
+            className="
+              text-3xl
+              text-[#5B2E15]
+              select-none
+            "
+          >
+            🖌
+          </div>
+
+
+          {/* Input */}
+          <input
+            type="text"
+            value={message}
+            disabled={loading}
+            onChange={(e) =>
+              setMessage(e.target.value)
+            }
+            onKeyDown={handleKeyDown}
+            placeholder="Ask Corsair anything..."
+            className="
+              flex-1
+              bg-transparent
+              outline-none
+              text-[#2C1810]
+              placeholder-[#8A6B4F]
+              text-lg
+              font-medium
+            "
+          />
+
+
+          {/* Send Seal */}
+          <button
+            onClick={handleSend}
+            disabled={loading}
+            className="
+              w-14
+              h-14
+              rounded-full
+              bg-gradient-to-b
+              from-[#B41D18]
+              to-[#701010]
+              text-white
+              text-xl
+              shadow-lg
+              hover:scale-110
+              transition
+              duration-300
+              disabled:opacity-50
+              flex
+              items-center
+              justify-center
+              border-2
+              border-[#E0B36D]
+            "
+          >
+            {loading ? "…" : "送"}
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
   );
