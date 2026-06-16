@@ -4,7 +4,7 @@ import panda from "../assets/panda-full.png";
 interface ChatWindowProps {
   children: ReactNode;
 }
-
+ 
 function ChatWindow({ children }: ChatWindowProps) {
   return (
     <main
@@ -39,19 +39,7 @@ function ChatWindow({ children }: ChatWindowProps) {
 
 
       {/* Panda decoration */}
-      <img
-        src={panda}
-        alt="Corsair Panda"
-        className="
-          absolute
-          bottom-0
-          right-8
-          w-[350px]
-          pointer-events-none
-          select-none
-          opacity-95
-        "
-      />
+
     </main>
   );
 }
